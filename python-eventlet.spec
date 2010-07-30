@@ -3,7 +3,7 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name:           python-eventlet
-Version:        0.9.7
+Version:        0.9.9
 Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
@@ -26,7 +26,7 @@ scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 
-%if 0%{?fedora} > 11
+%if 0%{?fedora} > 8
 %package doc
 Summary:        Documentation for %{name}
 Group:          Documentation
@@ -43,17 +43,17 @@ find -name '.*' -type f -exec rm {} \;
 
 %build
 %{__python} setup.py build
-%if 0%{?fedora} > 11
+%if 0%{?fedora} > 8
 pushd doc
 make html
 rm _build/html/.buildinfo
 popd
+chmod a-x tests/mock.py
 %endif
 
 %install
 rm -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
-rm -rf %{buildroot}%{python_sitelib}/benchmarks
  
 %clean
 rm -rf %{buildroot}
@@ -65,12 +65,15 @@ rm -rf %{buildroot}
 %{python_sitelib}/eventlet
 %{python_sitelib}/eventlet*.egg-info
 
-%if 0%{?fedora} > 11
+%if 0%{?fedora} > 8
 %files doc
 %defattr(-,root,root,-)
-%doc doc/_build/html examples benchmarks tests
+%doc doc/_build/html examples tests
 %endif
 
 %changelog
+* Wed Jul 28 2010 Lev Shamardin <shamardin@gmail.com> - 0.9.9-1
+- Updated to version 0.9.9.
+
 * Wed Apr 14 2010 Lev Shamardin <shamardin@gmail.com> - 0.9.7-1
 - Initial package version.
