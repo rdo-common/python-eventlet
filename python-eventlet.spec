@@ -3,7 +3,7 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name:           python-eventlet
-Version:        0.9.9
+Version:        0.9.12
 Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
@@ -40,6 +40,8 @@ Documentation for the python-eventlet package.
 %prep
 %setup -q -n eventlet-%{version}
 find -name '.*' -type f -exec rm {} \;
+sed -i -e 's///g' tests/mock.py
+sed -i -e '1d' eventlet/support/greendns.py
 
 %build
 %{__python} setup.py build
@@ -72,6 +74,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Wed Sep 08 2010 Lev Shamardin <shamardin@gmail.com> - 0.9.12-1
+- Updated to version 0.9.12.
+
 * Wed Jul 28 2010 Lev Shamardin <shamardin@gmail.com> - 0.9.9-1
 - Updated to version 0.9.9.
 
