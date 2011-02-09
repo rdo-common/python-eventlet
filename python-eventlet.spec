@@ -4,7 +4,7 @@
 
 Name:           python-eventlet
 Version:        0.9.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
@@ -74,6 +74,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.12-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Wed Sep 08 2010 Lev Shamardin <shamardin@gmail.com> - 0.9.12-1
 - Updated to version 0.9.12.
 
