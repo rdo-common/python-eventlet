@@ -3,8 +3,8 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name:           python-eventlet
-Version:        0.9.12
-Release:        2%{?dist}
+Version:        0.9.16
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
@@ -74,6 +74,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Sat Aug 27 2011 Kevin Fenzi <kevin@scrye.com> - 0.9.16-1
+- Update to 0.9.16
+
 * Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.12-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
