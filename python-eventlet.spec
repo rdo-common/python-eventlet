@@ -4,12 +4,17 @@
 
 Name:           python-eventlet
 Version:        0.9.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
 URL:            http://eventlet.net
 Source0:        http://pypi.python.org/packages/source/e/eventlet/eventlet-%{version}.tar.gz
+
+# From https://bitbucket.org/which_linden/eventlet/issue/89/add-a-timeout-argument-to-subprocesspopen
+# Required on RHEL >= 6.1 where python 2.6 has the backported timeout support
+Patch1:         subprocess_timeout.patch
+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -42,6 +47,7 @@ Documentation for the python-eventlet package.
 find -name '.*' -type f -exec rm {} \;
 sed -i -e 's///g' tests/mock.py
 sed -i -e '1d' eventlet/support/greendns.py
+%patch1 -p1 -b .subprocess_timeout
 
 %build
 %{__python} setup.py build
@@ -74,6 +80,10 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Wed Nov 09 2011 Pádraig Brady <P@draigBrady.com - 0.9.16-2
+- Apply a patch to support subprocess.Popen implementations
+  that accept the timeout parameter, which is the case on RHEL >= 6.1
+
 * Sat Aug 27 2011 Kevin Fenzi <kevin@scrye.com> - 0.9.16-1
 - Update to 0.9.16
 
