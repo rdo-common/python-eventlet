@@ -4,7 +4,7 @@
 
 Name:           python-eventlet
 Version:        0.9.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
@@ -80,6 +80,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.16-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Wed Nov 09 2011 Pádraig Brady <P@draigBrady.com - 0.9.16-2
 - Apply a patch to support subprocess.Popen implementations
   that accept the timeout parameter, which is the case on RHEL >= 6.1
