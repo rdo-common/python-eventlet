@@ -4,7 +4,7 @@
 
 Name:           python-eventlet
 Version:        0.9.16
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
@@ -14,6 +14,9 @@ Source0:        http://pypi.python.org/packages/source/e/eventlet/eventlet-%{ver
 # From https://bitbucket.org/which_linden/eventlet/issue/89/add-a-timeout-argument-to-subprocesspopen
 # Required on RHEL >= 6.1 where python 2.6 has the backported timeout support
 Patch1:         subprocess_timeout.patch
+# From https://bitbucket.org/jerdfelt/eventlet/changeset/2a02c700f51a/raw/
+# To plug _DummyThread leak described at https://bugs.launchpad.net/nova/+bug/903199
+Patch2:         dummythread_leak.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
@@ -48,6 +51,7 @@ find -name '.*' -type f -exec rm {} \;
 sed -i -e 's///g' tests/mock.py
 sed -i -e '1d' eventlet/support/greendns.py
 %patch1 -p1 -b .subprocess_timeout
+%patch2 -p1 -b .dummythread_leak
 
 %build
 %{__python} setup.py build
@@ -80,6 +84,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Wed Feb 29 2012 Pádraig Brady <P@draigBrady.com - 0.9.16-4
+- Apply a patch to avoid leak of _DummyThread objects
+
 * Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.16-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
