@@ -1,21 +1,6 @@
-# HG changeset patch
-# User Johannes Erdfelt <johannes@erdfelt.com>
-# Date 1330543338 0
-# Node ID 2a02c700f51adfd406082bbef5f331745aa1219a
-# Parent  f2833c4d0bf8fb7f150bc6fc16d0b79cc329f1a7
-Monkey patch threading.current_thread() as well
-
-Fixes bug 115
-
-Patching thread.get_ident() but not threading.current_thread() can
-result in _DummyThread objects being created. These objects will
-never be garbage collected and will leak memory. In a long running
-process (like a daemon), this can result in a pretty significant
-memory leak if it uses green threads regularly.
-
-diff -r f2833c4d0bf8fb7f150bc6fc16d0b79cc329f1a7 -r 2a02c700f51adfd406082bbef5f331745aa1219a eventlet/green/threading.py
---- a/eventlet/green/threading.py	Wed Feb 29 05:45:12 2012 +0000
-+++ b/eventlet/green/threading.py	Wed Feb 29 19:22:18 2012 +0000
+diff -Naur eventlet-0.9.16.orig/eventlet/green/threading.py eventlet-0.9.16/eventlet/green/threading.py
+--- eventlet-0.9.16.orig/eventlet/green/threading.py	2010-06-07 19:15:37.000000000 +0000
++++ eventlet-0.9.16/eventlet/green/threading.py	2012-03-05 20:08:51.932476383 +0000
 @@ -1,9 +1,16 @@
 +"""Implements the standard threading module, using greenthreads."""
  from eventlet import patcher
@@ -26,7 +11,7 @@ diff -r f2833c4d0bf8fb7f150bc6fc16d0b79cc329f1a7 -r 2a02c700f51adfd406082bbef5f3
  __patched__ = ['_start_new_thread', '_allocate_lock', '_get_ident', '_sleep',
 -               'local', 'stack_size', 'Lock']
 +               'local', 'stack_size', 'Lock', 'currentThread',
-+               'current_thread']
++               'current_thread', '_after_fork']
 +
 +__orig_threading = patcher.original('threading')
 +__threadlocal = __orig_threading.local()
@@ -34,7 +19,7 @@ diff -r f2833c4d0bf8fb7f150bc6fc16d0b79cc329f1a7 -r 2a02c700f51adfd406082bbef5f3
  
  patcher.inject('threading',
      globals(),
-@@ -11,3 +18,79 @@
+@@ -11,3 +18,103 @@
      ('time', time))
  
  del patcher
@@ -53,16 +38,40 @@ diff -r f2833c4d0bf8fb7f150bc6fc16d0b79cc329f1a7 -r 2a02c700f51adfd406082bbef5f3
 +    def __repr__(self):
 +        return '<_GreenThread(%s, %r)>' % (self._name, self._g)
 +
++    def join(self, timeout=None):
++        return self._g.wait()
++
 +    @property
 +    def name(self):
 +        return self._name
++
++    @name.setter
++    def name(self, name):
++        self._name = str(name)
 +
 +    def getName(self):
 +        return self.name
 +    get_name = getName
 +
-+    def join(self):
-+        return self._g.wait()
++    def setName(self, name):
++        self.name = name
++    set_name = setName
++
++    @property
++    def ident(self):
++        return id(self._g)
++
++    def isAlive(self):
++        return True
++    is_alive = isAlive
++
++    @property
++    def daemon(self):
++        return True
++
++    def isDaemon(self):
++        return self.daemon
++    is_daemon = isDaemon
 +
 +
 +__threading = None
@@ -114,9 +123,9 @@ diff -r f2833c4d0bf8fb7f150bc6fc16d0b79cc329f1a7 -r 2a02c700f51adfd406082bbef5f3
 +    return t
 +
 +currentThread = current_thread
-diff -r f2833c4d0bf8fb7f150bc6fc16d0b79cc329f1a7 -r 2a02c700f51adfd406082bbef5f331745aa1219a eventlet/patcher.py
---- a/eventlet/patcher.py	Wed Feb 29 05:45:12 2012 +0000
-+++ b/eventlet/patcher.py	Wed Feb 29 19:22:18 2012 +0000
+diff -Naur eventlet-0.9.16.orig/eventlet/patcher.py eventlet-0.9.16/eventlet/patcher.py
+--- eventlet-0.9.16.orig/eventlet/patcher.py	2011-04-11 06:56:59.000000000 +0000
++++ eventlet-0.9.16/eventlet/patcher.py	2012-03-05 20:08:45.749398303 +0000
 @@ -223,7 +223,6 @@
          on.setdefault(modname, default_on)
          
@@ -161,10 +170,10 @@ diff -r f2833c4d0bf8fb7f150bc6fc16d0b79cc329f1a7 -r 2a02c700f51adfd406082bbef5f3
  def is_monkey_patched(module):
      """Returns True if the given module is monkeypatched currently, False if
      not.  *module* can be either the module itself or its name.
-diff -r f2833c4d0bf8fb7f150bc6fc16d0b79cc329f1a7 -r 2a02c700f51adfd406082bbef5f331745aa1219a tests/patcher_test.py
---- a/tests/patcher_test.py	Wed Feb 29 05:45:12 2012 +0000
-+++ b/tests/patcher_test.py	Wed Feb 29 19:22:18 2012 +0000
-@@ -293,5 +293,95 @@
+diff -Naur eventlet-0.9.16.orig/tests/patcher_test.py eventlet-0.9.16/tests/patcher_test.py
+--- eventlet-0.9.16.orig/tests/patcher_test.py	2011-02-16 00:59:54.000000000 +0000
++++ eventlet-0.9.16/tests/patcher_test.py	2012-03-05 20:08:51.933476395 +0000
+@@ -293,5 +293,175 @@
          self.assertEqual(output, "done\n", output)
  
  
@@ -257,6 +266,86 @@ diff -r f2833c4d0bf8fb7f150bc6fc16d0b79cc329f1a7 -r 2a02c700f51adfd406082bbef5f3
 +        self.assertEqual(len(lines), 3, "\n".join(lines))
 +        self.assert_(lines[0].startswith('<_GreenThread'), lines[0])
 +        self.assertEqual(lines[1], "1", lines[1])
++
++
++class GreenThreadWrapper(ProcessBase):
++    prologue = """import eventlet
++eventlet.monkey_patch()
++import threading
++def test():
++    t = threading.current_thread()
++"""
++    epilogue = """
++t = eventlet.spawn(test)
++t.wait()
++"""
++
++    def test_join(self):
++        self.write_to_tempfile("newmod", self.prologue + """
++    def test2():
++        global t2
++        t2 = threading.current_thread()
++    eventlet.spawn(test2)
++""" + self.epilogue + """
++print repr(t2)
++t2.join()
++""")
++        output, lines = self.launch_subprocess('newmod')
++        self.assertEqual(len(lines), 2, "\n".join(lines))
++        self.assert_(lines[0].startswith('<_GreenThread'), lines[0])
++
++    def test_name(self):
++        self.write_to_tempfile("newmod", self.prologue + """
++    print t.name
++    print t.getName()
++    print t.get_name()
++    t.name = 'foo'
++    print t.name
++    print t.getName()
++    print t.get_name()
++    t.setName('bar')
++    print t.name
++    print t.getName()
++    print t.get_name()
++""" + self.epilogue)
++        output, lines = self.launch_subprocess('newmod')
++        self.assertEqual(len(lines), 10, "\n".join(lines))
++        for i in xrange(0, 3):
++            self.assertEqual(lines[i], "GreenThread-1", lines[i])
++        for i in xrange(3, 6):
++            self.assertEqual(lines[i], "foo", lines[i])
++        for i in xrange(6, 9):
++            self.assertEqual(lines[i], "bar", lines[i])
++
++    def test_ident(self):
++        self.write_to_tempfile("newmod", self.prologue + """
++    print id(t._g)
++    print t.ident
++""" + self.epilogue)
++        output, lines = self.launch_subprocess('newmod')
++        self.assertEqual(len(lines), 3, "\n".join(lines))
++        self.assertEqual(lines[0], lines[1])
++
++    def test_is_alive(self):
++        self.write_to_tempfile("newmod", self.prologue + """
++    print t.is_alive()
++    print t.isAlive()
++""" + self.epilogue)
++        output, lines = self.launch_subprocess('newmod')
++        self.assertEqual(len(lines), 3, "\n".join(lines))
++        self.assertEqual(lines[0], "True", lines[0])
++        self.assertEqual(lines[1], "True", lines[1])
++
++    def test_is_daemon(self):
++        self.write_to_tempfile("newmod", self.prologue + """
++    print t.is_daemon()
++    print t.isDaemon()
++""" + self.epilogue)
++        output, lines = self.launch_subprocess('newmod')
++        self.assertEqual(len(lines), 3, "\n".join(lines))
++        self.assertEqual(lines[0], "True", lines[0])
++        self.assertEqual(lines[1], "True", lines[1])
++
 +
  if __name__ == '__main__':
      main()
