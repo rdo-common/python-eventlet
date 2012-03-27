@@ -4,7 +4,7 @@
 
 Name:           python-eventlet
 Version:        0.9.16
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
@@ -14,9 +14,10 @@ Source0:        http://pypi.python.org/packages/source/e/eventlet/eventlet-%{ver
 # From https://bitbucket.org/which_linden/eventlet/issue/89/add-a-timeout-argument-to-subprocesspopen
 # Required on RHEL >= 6.1 where python 2.6 has the backported timeout support
 Patch1:         subprocess_timeout.patch
-# From https://bitbucket.org/jerdfelt/eventlet/changeset/2a02c700f51a/raw/
-#      https://bitbucket.org/jerdfelt/eventlet/changeset/55b6de9bd947/raw/
-#      https://bitbucket.org/jerdfelt/eventlet/changeset/6603e234fc56/raw/
+# From https://bitbucket.org/which_linden/eventlet/changeset/2a02c700f51a/raw/
+#      https://bitbucket.org/which_linden/eventlet/changeset/55b6de9bd947/raw/
+#      https://bitbucket.org/which_linden/eventlet/changeset/6603e234fc56/raw/
+#      https://bitbucket.org/which_linden/eventlet/changeset/f3fd4562f347/raw/
 # To plug _DummyThread leak described at https://bugs.launchpad.net/nova/+bug/903199
 Patch2:         dummythread_leak.patch
 
@@ -86,6 +87,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Mar 27 2012 Pádraig Brady <P@draigBrady.com - 0.9.16-6
+- Update patch to avoid leak of _DummyThread objects
+
 * Mon Mar  5 2012 Pádraig Brady <P@draigBrady.com - 0.9.16-5
 - Fix patch to avoid leak of _DummyThread objects
 
