@@ -4,7 +4,7 @@
 
 Name:           python-eventlet
 Version:        0.9.16
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
@@ -87,6 +87,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.16-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
 * Tue Mar 27 2012 Pádraig Brady <P@draigBrady.com - 0.9.16-6
 - Update patch to avoid leak of _DummyThread objects
 
