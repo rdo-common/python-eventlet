@@ -3,8 +3,8 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name:           python-eventlet
-Version:        0.9.16
-Release:        7%{?dist}
+Version:        0.9.17
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
@@ -14,12 +14,6 @@ Source0:        http://pypi.python.org/packages/source/e/eventlet/eventlet-%{ver
 # From https://bitbucket.org/which_linden/eventlet/issue/89/add-a-timeout-argument-to-subprocesspopen
 # Required on RHEL >= 6.1 where python 2.6 has the backported timeout support
 Patch1:         subprocess_timeout.patch
-# From https://bitbucket.org/which_linden/eventlet/changeset/2a02c700f51a/raw/
-#      https://bitbucket.org/which_linden/eventlet/changeset/55b6de9bd947/raw/
-#      https://bitbucket.org/which_linden/eventlet/changeset/6603e234fc56/raw/
-#      https://bitbucket.org/which_linden/eventlet/changeset/f3fd4562f347/raw/
-# To plug _DummyThread leak described at https://bugs.launchpad.net/nova/+bug/903199
-Patch2:         dummythread_leak.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
@@ -54,7 +48,6 @@ find -name '.*' -type f -exec rm {} \;
 sed -i -e 's///g' tests/mock.py
 sed -i -e '1d' eventlet/support/greendns.py
 %patch1 -p1 -b .subprocess_timeout
-%patch2 -p1 -b .dummythread_leak
 
 %build
 %{__python} setup.py build
@@ -69,7 +62,7 @@ chmod a-x tests/mock.py
 %install
 rm -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
- 
+
 %clean
 rm -rf %{buildroot}
 
@@ -87,6 +80,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Fri Aug 03 2012 Pádraig Brady <P@draigBrady.com - 0.9.17-1
+- Update to 0.9.17
+
 * Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.16-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
