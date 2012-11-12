@@ -4,7 +4,7 @@
 
 Name:           python-eventlet
 Version:        0.9.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
@@ -14,6 +14,8 @@ Source0:        http://pypi.python.org/packages/source/e/eventlet/eventlet-%{ver
 # From https://bitbucket.org/which_linden/eventlet/issue/89/add-a-timeout-argument-to-subprocesspopen
 # Required on RHEL >= 6.1 where python 2.6 has the backported timeout support
 Patch1:         subprocess_timeout.patch
+# From https://bitbucket.org/which_linden/eventlet/issue/92/eventletgreen-override-of-oswaitpid
+Patch2:         waitpid_zombies.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
@@ -48,6 +50,7 @@ find -name '.*' -type f -exec rm {} \;
 sed -i -e 's///g' tests/mock.py
 sed -i -e '1d' eventlet/support/greendns.py
 %patch1 -p1 -b .subprocess_timeout
+%patch2 -p1 -b .waitpid_zombies
 
 %build
 %{__python} setup.py build
@@ -80,6 +83,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Nov 12 2012 Pádraig Brady <P@draigBrady.com - 0.9.17-2
+- fix waitpid() override to not return immediately
+
 * Fri Aug 03 2012 Pádraig Brady <P@draigBrady.com - 0.9.17-1
 - Update to 0.9.17
 
