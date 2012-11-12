@@ -1,0 +1,19 @@
+# HG changeset patch
+# User Vishvananda Ishaya <vishvananda@gmail.com>
+# Date 1352422051 28800
+# Node ID 2e0b34668e60f5ff6b85db39c294e782a2597738
+# Parent  5580e67331c02c407c56f9cdc93c524b82665738
+fix waitpid returning (0, 0)
+
+diff -r 5580e67331c02c407c56f9cdc93c524b82665738 -r 2e0b34668e60f5ff6b85db39c294e782a2597738 eventlet/green/os.py
+--- a/eventlet/green/os.py	Fri Nov 02 15:16:15 2012 -0600
++++ b/eventlet/green/os.py	Thu Nov 08 16:47:31 2012 -0800
+@@ -77,7 +77,7 @@
+         new_options = options | os_orig.WNOHANG
+         while True:
+             rpid, status = __original_waitpid__(pid, new_options)
+-            if status >= 0:
++            if rpid and status >= 0:
+                 return rpid, status
+             greenthread.sleep(0.01)
+ 
