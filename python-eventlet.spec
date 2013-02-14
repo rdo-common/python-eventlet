@@ -4,7 +4,7 @@
 
 Name:           python-eventlet
 Version:        0.9.17
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
@@ -83,6 +83,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.17-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
 * Mon Nov 12 2012 Pádraig Brady <P@draigBrady.com - 0.9.17-2
 - fix waitpid() override to not return immediately
 
