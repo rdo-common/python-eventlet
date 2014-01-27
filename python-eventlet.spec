@@ -3,17 +3,13 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name:           python-eventlet
-Version:        0.12.0
-Release:        2%{?dist}
+Version:        0.14.0
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
 URL:            http://eventlet.net
 Source0:        http://pypi.python.org/packages/source/e/eventlet/eventlet-%{version}.tar.gz
-
-# From https://bitbucket.org/eventlet/eventlet/issue/89/add-a-timeout-argument-to-subprocesspopen
-# Required on RHEL >= 6.1 where python 2.6 has the backported timeout support
-Patch1:         subprocess_timeout.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
@@ -47,7 +43,6 @@ Documentation for the python-eventlet package.
 find -name '.*' -type f -exec rm {} \;
 sed -i -e 's///g' tests/mock.py
 sed -i -e '1d' eventlet/support/greendns.py
-%patch1 -p1 -b .subprocess_timeout
 
 %build
 %{__python} setup.py build
@@ -69,7 +64,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS LICENSE NEWS README README.twisted
+%doc AUTHORS LICENSE NEWS README.rst README.twisted
 %{python_sitelib}/eventlet
 %{python_sitelib}/eventlet*.egg-info
 
@@ -80,6 +75,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Oct 28 2013 Alan Pevec <apevec@redhat.com> - 0.14.0-1
+- Update to 0.14.0
+
 * Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.12.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
