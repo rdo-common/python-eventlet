@@ -3,8 +3,8 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name:           python-eventlet
-Version:        0.14.0
-Release:        2%{?dist}
+Version:        0.15.2
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
 License:        MIT
@@ -57,6 +57,7 @@ chmod a-x tests/mock.py
 %install
 rm -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
+rm -rf %{buildroot}/%{python_sitelib}/tests
 
 %clean
 rm -rf %{buildroot}
@@ -75,6 +76,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Sep 02 2014 Pádraig Brady <pbrady@redhat.com> - 0.15.2-1
+- Latest upstream
+
 * Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.14.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
