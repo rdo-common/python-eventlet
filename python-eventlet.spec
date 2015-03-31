@@ -3,7 +3,7 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name:           python-eventlet
-Version:        0.15.2
+Version:        0.17.1
 Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
@@ -42,7 +42,6 @@ Documentation for the python-eventlet package.
 %setup -q -n eventlet-%{version}
 find -name '.*' -type f -exec rm {} \;
 sed -i -e 's///g' tests/mock.py
-sed -i -e '1d' eventlet/support/greendns.py
 
 %build
 %{__python} setup.py build
@@ -65,7 +64,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS LICENSE NEWS README.rst README.twisted
+%doc AUTHORS LICENSE NEWS README.rst
 %{python_sitelib}/eventlet
 %{python_sitelib}/eventlet*.egg-info
 
@@ -76,6 +75,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Mar 31 2015 Pádraig Brady <pbrady@redhat.com> - 0.17.1-1
+- Latest upstream
+
 * Tue Sep 02 2014 Pádraig Brady <pbrady@redhat.com> - 0.15.2-1
 - Latest upstream
 
