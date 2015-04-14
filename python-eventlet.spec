@@ -3,7 +3,7 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name:           python-eventlet
-Version:        0.17.1
+Version:        0.17.3
 Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 Group:          Development/Libraries
@@ -75,6 +75,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Apr 14 2015 Pádraig Brady <pbrady@redhat.com> - 0.17.3-1
+- Latest upstream
+
 * Tue Mar 31 2015 Pádraig Brady <pbrady@redhat.com> - 0.17.1-1
 - Latest upstream
 
