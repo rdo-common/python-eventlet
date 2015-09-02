@@ -2,11 +2,18 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
-Name:           python-eventlet
+%{!?_licensedir:%global license %%doc}
+
+%global pypi_name eventlet
+
+%if 0%{?fedora}
+%global with_python3 1
+%endif
+
+Name:           python-%{pypi_name}
 Version:        0.17.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly concurrent networking library
-Group:          Development/Libraries
 License:        MIT
 URL:            http://eventlet.net
 Source0:        http://pypi.python.org/packages/source/e/eventlet/eventlet-%{version}.tar.gz
@@ -15,10 +22,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
-%if 0%{?fedora} > 8
-BuildRequires:  python-sphinx
-BuildRequires:  python-greenlet
-%endif
+
 Requires:       python-greenlet
 
 %description
@@ -27,54 +31,132 @@ scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 
-%if 0%{?fedora} > 8
-%package doc
-Summary:        Documentation for %{name}
-Group:          Documentation
-Requires:       %{name} = %{version}-%{release}
 
-%description doc
+
+%package -n python2-%{pypi_name}
+%{?python_provide:%python_provide python2-%{pypi_name}}
+Summary:        Highly concurrent networking library
+# python_provide does not exist in CBS Cloud buildroot
+Provides:   python-%{pypi_name}
+
+BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
+Requires:       python-greenlet
+
+%description -n python2-%{pypi_name}
+Eventlet is a networking library written in Python. It achieves high
+scalability by using non-blocking io while at the same time retaining
+high programmer usability by using coroutines to make the non-blocking
+io operations appear blocking at the source code level.
+
+%if 0%{with_python3}
+%package -n python3-eventlet
+Summary:        Highly concurrent networking library
+BuildArch:      noarch
+
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+
+Requires:       python3-greenlet
+
+%{?python_provide:%python_provide python3-eventlet}
+
+%description -n python3-eventlet
+Eventlet is a networking library written in Python. It achieves high
+scalability by using non-blocking io while at the same time retaining
+high programmer usability by using coroutines to make the non-blocking
+io operations appear blocking at the source code level.
+%endif
+
+%package -n python2-%{pypi_name}-doc
+Summary:        Documentation for %{name}
+BuildRequires:  python-sphinx
+
+%description -n python2-%{pypi_name}-doc
+Documentation for the python-eventlet package.
+
+%if 0%{?with_python3}
+%package -n python3-eventlet-doc
+Summary: Documentation for python3-eventlet-doc
+BuildRequires:  python3-sphinx
+
+%description -n python3-eventlet-doc
 Documentation for the python-eventlet package.
 %endif
 
-
 %prep
-%setup -q -n eventlet-%{version}
-find -name '.*' -type f -exec rm {} \;
-sed -i -e 's///g' tests/mock.py
+%setup -q -n %{pypi_name}-%{version}
+rm -rf *.egg-info
 
-%build
-%{__python} setup.py build
-%if 0%{?fedora} > 8
+# generate html docs
+export PYTHONPATH="$( pwd ):$PYTHONPATH"
 pushd doc
 make html
-rm _build/html/.buildinfo
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
 popd
-chmod a-x tests/mock.py
+
+%if 0%{?with_python3}
+rm -rf %{py3dir}
+cp -a . %{py3dir}
+find %{py3dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python3}|'
+# generate html docs 
+export PYTHONPATH="$( pwd ):$PYTHONPATH"
+pushd doc
+make html
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+popd
+%endif
+
+%build
+%{__python2} setup.py build
+
+%if 0%{?with_python3}
+pushd %{py3dir}
+%{__python3} setup.py build
+popd
 %endif
 
 %install
-rm -rf %{buildroot}
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%if 0%{?with_python3}
+pushd %{py3dir}
+%{__python3} setup.py install --skip-build --root %{buildroot}
+rm -rf %{buildroot}/%{python_sitelib}/tests
+popd
+%endif
+
+%{__python2} setup.py install --skip-build --root %{buildroot}
 rm -rf %{buildroot}/%{python_sitelib}/tests
 
-%clean
-rm -rf %{buildroot}
+%files -n python2-%{pypi_name}
+%doc README.rst AUTHORS LICENSE NEWS
+%license LICENSE
+%{python2_sitelib}/%{pypi_name}
+%{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
 
+%if 0%{?with_python3}
+%files -n python3-%{pypi_name}
+%doc README.rst AUTHORS LICENSE NEWS
+%license LICENSE
+%{python3_sitelib}/%{pypi_name}
+%{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
+%endif
 
-%files
-%defattr(-,root,root,-)
-%doc AUTHORS LICENSE NEWS README.rst
-%{python_sitelib}/eventlet
-%{python_sitelib}/eventlet*.egg-info
+%files -n python2-%{pypi_name}-doc
+%license LICENSE
+%doc doc/_build/html
 
-%if 0%{?fedora} > 8
-%files doc
-%defattr(-,root,root,-)
-%doc doc/_build/html examples tests
+%if 0%{?with_python3}
+%files -n python3-%{pypi_name}-doc
+%license LICENSE
+%doc doc/_build/html
 %endif
 
 %changelog
+* Tue Sep 01 2015 Chandan Kumar <chkumar246@gmail.com> - 0.17.4-2
+- Added python3 support
+
 * Wed Jul 22 2015 Pádraig Brady <pbrady@redhat.com> - 0.17.4-1
 - Latest upstream
 
