@@ -12,7 +12,7 @@
 
 Name:           python-%{pypi_name}
 Version:        0.17.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -32,22 +32,24 @@ high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 
 
-
 %package -n python2-%{pypi_name}
-%{?python_provide:%python_provide python2-%{pypi_name}}
 Summary:        Highly concurrent networking library
-# python_provide does not exist in CBS Cloud buildroot
-Provides:   python-%{pypi_name}
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 Requires:       python-greenlet
+
+%{?python_provide:%python_provide python2-%{pypi_name}}
+# python_provide does not exist in CBS Cloud buildroot
+Provides:   python-%{pypi_name} = %{version}-%{release}
+Obsoletes:  python-%{pypi_name} < 0.17.4-3
 
 %description -n python2-%{pypi_name}
 Eventlet is a networking library written in Python. It achieves high
 scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
+
 
 %if 0%{with_python3}
 %package -n python3-eventlet
@@ -68,9 +70,15 @@ high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 %endif
 
+
 %package -n python2-%{pypi_name}-doc
 Summary:        Documentation for %{name}
 BuildRequires:  python-sphinx
+
+%{?python_provide:%python_provide python2-%{pypi_name}-doc}
+# python_provide does not exist in CBS Cloud buildroot
+Provides:   python-%{pypi_name}-doc = %{version}-%{release}
+Obsoletes:  python-%{pypi_name}-doc < 0.17.4-3
 
 %description -n python2-%{pypi_name}-doc
 Documentation for the python-eventlet package.
@@ -100,7 +108,7 @@ popd
 rm -rf %{py3dir}
 cp -a . %{py3dir}
 find %{py3dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python3}|'
-# generate html docs 
+# generate html docs
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
 pushd doc
 make html
@@ -154,6 +162,9 @@ rm -rf %{buildroot}/%{python_sitelib}/tests
 %endif
 
 %changelog
+* Thu Sep 03 2015 Pádraig Brady <pbrady@redhat.com> - 0.17.4-3
+- Tighten up Provides: and Obsoletes: for previous change
+
 * Tue Sep 01 2015 Chandan Kumar <chkumar246@gmail.com> - 0.17.4-2
 - Added python3 support
 
