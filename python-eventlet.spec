@@ -52,7 +52,7 @@ high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 
 
-%if 0%{with_python3}
+%if 0%{?with_python3}
 %package -n python3-eventlet
 Summary:        Highly concurrent networking library
 BuildArch:      noarch
