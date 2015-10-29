@@ -12,11 +12,12 @@
 
 Name:           python-%{pypi_name}
 Version:        0.17.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
 Source0:        http://pypi.python.org/packages/source/e/eventlet/eventlet-%{version}.tar.gz
+Patch1:         0001-greenio-send-was-running-empty-loop-on-ENOTCONN.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
@@ -95,6 +96,7 @@ Documentation for the python-eventlet package.
 %prep
 %setup -q -n %{pypi_name}-%{version}
 rm -rf *.egg-info
+%patch1 -p1
 
 # generate html docs
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
@@ -162,6 +164,9 @@ rm -rf %{buildroot}/%{python_sitelib}/tests
 %endif
 
 %changelog
+* Mon Oct 19 2015 Jon Schlueter <jschluet@redhat.com> 0.17.4-4
+- greenio: send() was running empty loop on ENOTCONN rhbz#1268351
+
 * Thu Sep 03 2015 Pádraig Brady <pbrady@redhat.com> - 0.17.4-3
 - Tighten up Provides: and Obsoletes: for previous change
 
