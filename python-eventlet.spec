@@ -12,7 +12,7 @@
 
 Name:           python-%{pypi_name}
 Version:        0.17.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -164,6 +164,9 @@ rm -rf %{buildroot}/%{python_sitelib}/tests
 %endif
 
 %changelog
+* Tue Nov 10 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.17.4-5
+- Rebuilt for https://fedoraproject.org/wiki/Changes/python3.5
+
 * Mon Oct 19 2015 Jon Schlueter <jschluet@redhat.com> 0.17.4-4
 - greenio: send() was running empty loop on ENOTCONN rhbz#1268351
 
