@@ -11,13 +11,12 @@
 %endif
 
 Name:           python-%{pypi_name}
-Version:        0.17.4
-Release:        6%{?dist}
+Version:        0.18.4
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
 Source0:        http://pypi.python.org/packages/source/e/eventlet/eventlet-%{version}.tar.gz
-Patch1:         0001-greenio-send-was-running-empty-loop-on-ENOTCONN.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
@@ -96,7 +95,6 @@ Documentation for the python-eventlet package.
 %prep
 %setup -q -n %{pypi_name}-%{version}
 rm -rf *.egg-info
-%patch1 -p1
 
 # generate html docs
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
@@ -164,6 +162,9 @@ rm -rf %{buildroot}/%{python_sitelib}/tests
 %endif
 
 %changelog
+* Mon Apr 25 2016 Kevin Fenzi <kevin@scrye.com> - 0.18.4-1
+- Update to 0.18.4. Fixes bug #1329993
+
 * Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 0.17.4-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
