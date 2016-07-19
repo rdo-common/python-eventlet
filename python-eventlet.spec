@@ -12,7 +12,7 @@
 
 Name:           python-%{pypi_name}
 Version:        0.18.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -162,6 +162,9 @@ rm -rf %{buildroot}/%{python_sitelib}/tests
 %endif
 
 %changelog
+* Tue Jul 19 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.18.4-2
+- https://fedoraproject.org/wiki/Changes/Automatic_Provides_for_Python_RPM_Packages
+
 * Mon Apr 25 2016 Kevin Fenzi <kevin@scrye.com> - 0.18.4-1
 - Update to 0.18.4. Fixes bug #1329993
 
