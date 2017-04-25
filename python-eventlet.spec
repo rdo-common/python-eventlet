@@ -11,17 +11,18 @@
 %endif
 
 Name:           python-%{pypi_name}
-Version:        0.18.4
-Release:        4%{?dist}
+Version:        0.20.1
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
-Source0:        http://pypi.python.org/packages/source/e/eventlet/eventlet-%{version}.tar.gz
+Source0:        https://pypi.io/packages/source/e/eventlet/eventlet-%{version}.tar.gz
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python-greenlet
 
 Requires:       python-greenlet
 
@@ -58,6 +59,7 @@ BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-greenlet
 
 Requires:       python3-greenlet
 
@@ -130,12 +132,18 @@ popd
 %if 0%{?with_python3}
 pushd %{py3dir}
 %{__python3} setup.py install --skip-build --root %{buildroot}
-rm -rf %{buildroot}/%{python_sitelib}/tests
+rm -rf %{buildroot}/%{python3_sitelib}/tests
 popd
 %endif
 
 %{__python2} setup.py install --skip-build --root %{buildroot}
-rm -rf %{buildroot}/%{python_sitelib}/tests
+rm -rf %{buildroot}/%{python2_sitelib}/tests
+# FIXME: Those files are not meant to be used with Python 2.7
+# Anyway the whole module eventlet.green.http is Python 3 only
+# Trying to import it will fail under Python 2.7
+# https://github.com/eventlet/eventlet/issues/369
+rm -rf %{buildroot}/%{python2_sitelib}/%{pypi_name}/green/http/{cookiejar,client}.py
+
 
 %files -n python2-%{pypi_name}
 %doc README.rst AUTHORS LICENSE NEWS
@@ -162,6 +170,9 @@ rm -rf %{buildroot}/%{python_sitelib}/tests
 %endif
 
 %changelog
+* Tue Apr 25 2017 Haïkel Guémar <hguemar@fedoraproject.org> - 0.20.1-1
+- Upstream 0.20.1
+
 * Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.18.4-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
