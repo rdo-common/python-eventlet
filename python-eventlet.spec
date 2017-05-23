@@ -11,7 +11,7 @@
 %endif
 
 Name:           python-%{pypi_name}
-Version:        0.20.1
+Version:        0.21.0
 Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
@@ -37,8 +37,10 @@ io operations appear blocking at the source code level.
 Summary:        Highly concurrent networking library
 
 BuildRequires:  python2-devel
+BuildRequires:  python2-nose
 BuildRequires:  python-setuptools
 Requires:       python-greenlet
+Requires:       python-enum34
 
 %{?python_provide:%python_provide python2-%{pypi_name}}
 # python_provide does not exist in CBS Cloud buildroot
@@ -58,6 +60,7 @@ Summary:        Highly concurrent networking library
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
+BuildRequires:  python3-nose
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-greenlet
 
@@ -76,6 +79,7 @@ io operations appear blocking at the source code level.
 %package -n python2-%{pypi_name}-doc
 Summary:        Documentation for %{name}
 BuildRequires:  python-sphinx
+BuildRequires:  python2-zmq
 
 %{?python_provide:%python_provide python2-%{pypi_name}-doc}
 # python_provide does not exist in CBS Cloud buildroot
@@ -89,6 +93,7 @@ Documentation for the python-eventlet package.
 %package -n python3-eventlet-doc
 Summary: Documentation for python3-eventlet-doc
 BuildRequires:  python3-sphinx
+BuildRequires:  python3-zmq
 
 %description -n python3-eventlet-doc
 Documentation for the python-eventlet package.
@@ -97,6 +102,10 @@ Documentation for the python-eventlet package.
 %prep
 %setup -q -n %{pypi_name}-%{version}
 rm -rf *.egg-info
+
+# Remove dependency on enum-compat from setup.py. enum-compat is installed
+# as Require for python2 subpackage and it is not needed for Python 3
+sed -i "/'enum-compat',/d" setup.py
 
 # generate html docs
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
@@ -126,6 +135,12 @@ popd
 pushd %{py3dir}
 %{__python3} setup.py build
 popd
+%endif
+
+%check
+# Tests are written only for Python 3
+%if 0%{?with_python3}
+nosetests-%{python3_version}
 %endif
 
 %install
@@ -170,6 +185,12 @@ rm -rf %{buildroot}/%{python2_sitelib}/%{pypi_name}/green/http/{cookiejar,client
 %endif
 
 %changelog
+* Tue May 23 2017 Lumír Balhar <lbalhar@redhat.com> - 0.21.0-1
+- Upstream 0.21.0
+- Fix issue with enum-compat dependency for dependent packages
+- Enable tests
+- Fix tracebacks during docs generating by install python[23]-zmq
+
 * Tue Apr 25 2017 Haïkel Guémar <hguemar@fedoraproject.org> - 0.20.1-1
 - Upstream 0.20.1
 
