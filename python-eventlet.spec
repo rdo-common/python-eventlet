@@ -12,7 +12,7 @@
 
 Name:           python-%{pypi_name}
 Version:        0.21.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -185,6 +185,9 @@ rm -rf %{buildroot}/%{python2_sitelib}/%{pypi_name}/green/http/{cookiejar,client
 %endif
 
 %changelog
+* Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.21.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
 * Tue May 23 2017 Lumír Balhar <lbalhar@redhat.com> - 0.21.0-1
 - Upstream 0.21.0
 - Fix issue with enum-compat dependency for dependent packages
