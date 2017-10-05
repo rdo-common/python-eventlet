@@ -12,19 +12,21 @@
 
 Name:           python-%{pypi_name}
 Version:        0.21.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
 Source0:        https://pypi.io/packages/source/e/eventlet/eventlet-%{version}.tar.gz
 
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+# Patches cherry-picked upstream
+# Upstream issue: https://github.com/eventlet/eventlet/issues/401
+Patch001:       0001-patcher-workaround-for-monotonic-no-suitable-impleme.patch
+# Compat patch with PyOpenSSL 17.3.0 which deprecates OpenSSL.rand API
+# https://github.com/eventlet/eventlet/commit/5b8f5f595624bdfb5f707707959977bb56864e0d
+Patch002:       0002-Drop-OpenSSL.rand-support.patch
 BuildArch:      noarch
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python-greenlet
+BuildRequires:  git
 
-Requires:       python-greenlet
 
 %description
 Eventlet is a networking library written in Python. It achieves high
@@ -39,6 +41,9 @@ Summary:        Highly concurrent networking library
 BuildRequires:  python2-devel
 BuildRequires:  python2-nose
 BuildRequires:  python-setuptools
+BuildRequires:  python-greenlet
+BuildRequires:  python2-pyOpenSSL
+
 Requires:       python-greenlet
 Requires:       python-enum34
 
@@ -63,6 +68,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-nose
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-greenlet
+BuildRequires:  python3-pyOpenSSL
 
 Requires:       python3-greenlet
 
@@ -100,7 +106,7 @@ Documentation for the python-eventlet package.
 %endif
 
 %prep
-%setup -q -n %{pypi_name}-%{version}
+%autosetup -n %{pypi_name}-%{version} -S git
 rm -rf *.egg-info
 
 # Remove dependency on enum-compat from setup.py. enum-compat is installed
@@ -185,6 +191,11 @@ rm -rf %{buildroot}/%{python2_sitelib}/%{pypi_name}/green/http/{cookiejar,client
 %endif
 
 %changelog
+* Tue Oct  3 2017 Haïkel Guémar <hguemar@fedoraproject.org> - 0.21.0-3
+- Fix upstream #401
+- Fix compat with PyOpenSSL 17.3.0
+- Cleanup BR
+
 * Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.21.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
