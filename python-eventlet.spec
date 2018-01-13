@@ -1,12 +1,12 @@
-%global pypi_name eventlet
+%global modname eventlet
 
-Name:           python-%{pypi_name}
+Name:           python-%{modname}
 Version:        0.22.0
 Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
-Source0:        https://pypi.io/packages/source/%(n=%{pypi_name}; echo ${n:0:1})/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        https://pypi.io/packages/source/%(n=%{modname}; echo ${n:0:1})/%{modname}/%{modname}-%{version}.tar.gz
 
 BuildArch:      noarch
 
@@ -16,7 +16,7 @@ scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 
-%package -n python2-%{pypi_name}
+%package -n python2-%{modname}
 Summary:        %{summary}
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
@@ -25,15 +25,15 @@ BuildRequires:  python2-greenlet
 BuildRequires:  python2-pyOpenSSL
 Requires:       python2-greenlet
 Requires:       python2-enum34
-%{?python_provide:%python_provide python2-%{pypi_name}}
+%{?python_provide:%python_provide python2-%{modname}}
 
-%description -n python2-%{pypi_name}
+%description -n python2-%{modname}
 Eventlet is a networking library written in Python. It achieves high
 scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 
-%package -n python3-%{pypi_name}
+%package -n python3-%{modname}
 Summary:        %{summary}
 BuildArch:      noarch
 BuildRequires:  python3-devel
@@ -42,33 +42,33 @@ BuildRequires:  python3-nose
 BuildRequires:  python3-greenlet
 BuildRequires:  python3-pyOpenSSL
 Requires:       python3-greenlet
-%{?python_provide:%python_provide python3-%{pypi_name}}
+%{?python_provide:%python_provide python3-%{modname}}
 
-%description -n python3-%{pypi_name}
+%description -n python3-%{modname}
 Eventlet is a networking library written in Python. It achieves high
 scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 
-%package -n python2-%{pypi_name}-doc
-Summary:        Documentation for python2-%{pypi_name}
+%package -n python2-%{modname}-doc
+Summary:        Documentation for python2-%{modname}
 BuildRequires:  python2-sphinx
 BuildRequires:  python2-zmq
-%{?python_provide:%python_provide python2-%{pypi_name}-doc}
+%{?python_provide:%python_provide python2-%{modname}-doc}
 
-%description -n python2-%{pypi_name}-doc
+%description -n python2-%{modname}-doc
 %{summary}.
 
-%package -n python3-%{pypi_name}-doc
-Summary:        Documentation for python3-%{pypi_name}
+%package -n python3-%{modname}-doc
+Summary:        Documentation for python3-%{modname}
 BuildRequires:  python3-sphinx
 BuildRequires:  python3-zmq
 
-%description -n python3-%{pypi_name}-doc
+%description -n python3-%{modname}-doc
 %{summary}.
 
 %prep
-%autosetup -n %{pypi_name}-%{version} -p1
+%autosetup -n %{modname}-%{version} -p1
 rm -vrf *.egg-info
 # Remove dependency on enum-compat from setup.py. enum-compat is installed
 # as Require for python2 subpackage and it is not needed for Python 3
@@ -89,7 +89,7 @@ rm -vrf %{buildroot}%{python2_sitelib}/tests
 # Anyway the whole module eventlet.green.http is Python 3 only
 # Trying to import it will fail under Python 2.7
 # https://github.com/eventlet/eventlet/issues/369
-rm -rf %{buildroot}/%{python2_sitelib}/%{pypi_name}/green/http/{cookiejar,client}.py
+rm -rf %{buildroot}/%{python2_sitelib}/%{modname}/green/http/{cookiejar,client}.py
 %py3_install
 rm -vrf %{buildroot}%{python3_sitelib}/tests
 
@@ -97,23 +97,23 @@ rm -vrf %{buildroot}%{python3_sitelib}/tests
 # Tests are written only for Python 3
 nosetests-%{python3_version} -v
 
-%files -n python2-%{pypi_name}
+%files -n python2-%{modname}
 %doc README.rst AUTHORS LICENSE NEWS
 %license LICENSE
-%{python2_sitelib}/%{pypi_name}/
-%{python2_sitelib}/%{pypi_name}-*.egg-info/
+%{python2_sitelib}/%{modname}/
+%{python2_sitelib}/%{modname}-*.egg-info/
 
-%files -n python3-%{pypi_name}
+%files -n python3-%{modname}
 %doc README.rst AUTHORS LICENSE NEWS
 %license LICENSE
-%{python3_sitelib}/%{pypi_name}/
-%{python3_sitelib}/%{pypi_name}-*.egg-info/
+%{python3_sitelib}/%{modname}/
+%{python3_sitelib}/%{modname}-*.egg-info/
 
-%files -n python2-%{pypi_name}-doc
+%files -n python2-%{modname}-doc
 %license LICENSE
 %doc html-2
 
-%files -n python3-%{pypi_name}-doc
+%files -n python3-%{modname}-doc
 %license LICENSE
 %doc html-3
 
