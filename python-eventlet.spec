@@ -1,32 +1,14 @@
-# sitelib for noarch packages, sitearch for others (remove the unneeded one)
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-
-%{!?_licensedir:%global license %%doc}
-
 %global pypi_name eventlet
 
-%if 0%{?fedora}
-%global with_python3 1
-%endif
-
 Name:           python-%{pypi_name}
-Version:        0.21.0
-Release:        3%{?dist}
+Version:        0.22.0
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
-Source0:        https://pypi.io/packages/source/e/eventlet/eventlet-%{version}.tar.gz
+Source0:        https://pypi.io/packages/source/%(n=%{pypi_name}; echo ${n:0:1})/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 
-# Patches cherry-picked upstream
-# Upstream issue: https://github.com/eventlet/eventlet/issues/401
-Patch001:       0001-patcher-workaround-for-monotonic-no-suitable-impleme.patch
-# Compat patch with PyOpenSSL 17.3.0 which deprecates OpenSSL.rand API
-# https://github.com/eventlet/eventlet/commit/5b8f5f595624bdfb5f707707959977bb56864e0d
-Patch002:       0002-Drop-OpenSSL.rand-support.patch
 BuildArch:      noarch
-BuildRequires:  git
-
 
 %description
 Eventlet is a networking library written in Python. It achieves high
@@ -34,23 +16,16 @@ scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 
-
 %package -n python2-%{pypi_name}
-Summary:        Highly concurrent networking library
-
+Summary:        %{summary}
 BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
 BuildRequires:  python2-nose
-BuildRequires:  python-setuptools
-BuildRequires:  python-greenlet
+BuildRequires:  python2-greenlet
 BuildRequires:  python2-pyOpenSSL
-
-Requires:       python-greenlet
-Requires:       python-enum34
-
+Requires:       python2-greenlet
+Requires:       python2-enum34
 %{?python_provide:%python_provide python2-%{pypi_name}}
-# python_provide does not exist in CBS Cloud buildroot
-Provides:   python-%{pypi_name} = %{version}-%{release}
-Obsoletes:  python-%{pypi_name} < 0.17.4-3
 
 %description -n python2-%{pypi_name}
 Eventlet is a networking library written in Python. It achieves high
@@ -58,139 +33,94 @@ scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 
-
-%if 0%{?with_python3}
-%package -n python3-eventlet
-Summary:        Highly concurrent networking library
+%package -n python3-%{pypi_name}
+Summary:        %{summary}
 BuildArch:      noarch
-
 BuildRequires:  python3-devel
-BuildRequires:  python3-nose
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-nose
 BuildRequires:  python3-greenlet
 BuildRequires:  python3-pyOpenSSL
-
 Requires:       python3-greenlet
+%{?python_provide:%python_provide python3-%{pypi_name}}
 
-%{?python_provide:%python_provide python3-eventlet}
-
-%description -n python3-eventlet
+%description -n python3-%{pypi_name}
 Eventlet is a networking library written in Python. It achieves high
 scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
-%endif
-
 
 %package -n python2-%{pypi_name}-doc
-Summary:        Documentation for %{name}
-BuildRequires:  python-sphinx
+Summary:        Documentation for python2-%{pypi_name}
+BuildRequires:  python2-sphinx
 BuildRequires:  python2-zmq
-
 %{?python_provide:%python_provide python2-%{pypi_name}-doc}
-# python_provide does not exist in CBS Cloud buildroot
-Provides:   python-%{pypi_name}-doc = %{version}-%{release}
-Obsoletes:  python-%{pypi_name}-doc < 0.17.4-3
 
 %description -n python2-%{pypi_name}-doc
-Documentation for the python-eventlet package.
+%{summary}.
 
-%if 0%{?with_python3}
-%package -n python3-eventlet-doc
-Summary: Documentation for python3-eventlet-doc
+%package -n python3-%{pypi_name}-doc
+Summary:        Documentation for python3-%{pypi_name}
 BuildRequires:  python3-sphinx
 BuildRequires:  python3-zmq
 
-%description -n python3-eventlet-doc
-Documentation for the python-eventlet package.
-%endif
+%description -n python3-%{pypi_name}-doc
+%{summary}.
 
 %prep
-%autosetup -n %{pypi_name}-%{version} -S git
-rm -rf *.egg-info
-
+%autosetup -n %{pypi_name}-%{version} -p1
+rm -vrf *.egg-info
 # Remove dependency on enum-compat from setup.py. enum-compat is installed
 # as Require for python2 subpackage and it is not needed for Python 3
 sed -i "/'enum-compat',/d" setup.py
 
-# generate html docs
-export PYTHONPATH="$( pwd ):$PYTHONPATH"
-pushd doc
-make html
-# remove the sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
-popd
-
-%if 0%{?with_python3}
-rm -rf %{py3dir}
-cp -a . %{py3dir}
-find %{py3dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python3}|'
-# generate html docs
-export PYTHONPATH="$( pwd ):$PYTHONPATH"
-pushd doc
-make html
-# remove the sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
-popd
-%endif
-
 %build
-%{__python2} setup.py build
+%py2_build
+%py3_build
 
-%if 0%{?with_python3}
-pushd %{py3dir}
-%{__python3} setup.py build
-popd
-%endif
-
-%check
-# Tests are written only for Python 3
-%if 0%{?with_python3}
-nosetests-%{python3_version}
-%endif
+export PYTHONPATH=$(pwd)
+sphinx-build-%{python2_version} -b html -d doctrees doc html-2
+sphinx-build-%{python3_version} -b html -d doctrees doc html-3
 
 %install
-%if 0%{?with_python3}
-pushd %{py3dir}
-%{__python3} setup.py install --skip-build --root %{buildroot}
-rm -rf %{buildroot}/%{python3_sitelib}/tests
-popd
-%endif
-
-%{__python2} setup.py install --skip-build --root %{buildroot}
-rm -rf %{buildroot}/%{python2_sitelib}/tests
+%py2_install
+rm -vrf %{buildroot}%{python2_sitelib}/tests
 # FIXME: Those files are not meant to be used with Python 2.7
 # Anyway the whole module eventlet.green.http is Python 3 only
 # Trying to import it will fail under Python 2.7
 # https://github.com/eventlet/eventlet/issues/369
 rm -rf %{buildroot}/%{python2_sitelib}/%{pypi_name}/green/http/{cookiejar,client}.py
+%py3_install
+rm -vrf %{buildroot}%{python3_sitelib}/tests
 
+%check
+# Tests are written only for Python 3
+nosetests-%{python3_version} -v
 
 %files -n python2-%{pypi_name}
 %doc README.rst AUTHORS LICENSE NEWS
 %license LICENSE
-%{python2_sitelib}/%{pypi_name}
-%{python2_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
+%{python2_sitelib}/%{pypi_name}/
+%{python2_sitelib}/%{pypi_name}-*.egg-info/
 
-%if 0%{?with_python3}
 %files -n python3-%{pypi_name}
 %doc README.rst AUTHORS LICENSE NEWS
 %license LICENSE
-%{python3_sitelib}/%{pypi_name}
-%{python3_sitelib}/%{pypi_name}-%{version}-py?.?.egg-info
-%endif
+%{python3_sitelib}/%{pypi_name}/
+%{python3_sitelib}/%{pypi_name}-*.egg-info/
 
 %files -n python2-%{pypi_name}-doc
 %license LICENSE
-%doc doc/_build/html
+%doc html-2
 
-%if 0%{?with_python3}
 %files -n python3-%{pypi_name}-doc
 %license LICENSE
-%doc doc/_build/html
-%endif
+%doc html-3
 
 %changelog
+* Sat Jan 13 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 0.22.0-1
+- Update to 0.22.0
+
 * Tue Oct  3 2017 Haïkel Guémar <hguemar@fedoraproject.org> - 0.21.0-3
 - Fix upstream #401
 - Fix compat with PyOpenSSL 17.3.0
