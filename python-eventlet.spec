@@ -1,8 +1,8 @@
 %global modname eventlet
 
 Name:           python-%{modname}
-Version:        0.22.0
-Release:        2%{?dist}
+Version:        0.22.1
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -118,6 +118,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Sun Feb 18 2018 Kevin Fenzi <kevin@scrye.com> - 0.22.1-1
+- Update to 0.22.1. Fixes bug #1546471
+
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 0.22.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
