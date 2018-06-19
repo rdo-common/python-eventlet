@@ -2,7 +2,7 @@
 
 Name:           python-%{modname}
 Version:        0.22.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -118,6 +118,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.22.1-2
+- Rebuilt for Python 3.7
+
 * Sun Feb 18 2018 Kevin Fenzi <kevin@scrye.com> - 0.22.1-1
 - Update to 0.22.1. Fixes bug #1546471
 
