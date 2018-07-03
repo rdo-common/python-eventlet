@@ -1,8 +1,8 @@
 %global modname eventlet
 
 Name:           python-%{modname}
-Version:        0.22.1
-Release:        2%{?dist}
+Version:        0.23.0
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -118,6 +118,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Fri Jun 22 2018 Miro Hrončok <mhroncok@redhat.com> - 0.23.0-1
+- Update to 0.23.0 (#1575434)
+
 * Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.22.1-2
 - Rebuilt for Python 3.7
 
