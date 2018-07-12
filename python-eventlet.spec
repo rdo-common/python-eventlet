@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
-Source0:        https://pypi.io/packages/source/%(n=%{modname}; echo ${n:0:1})/%{modname}/%{modname}-%{version}.tar.gz
+Source0:        %pypi_source %{modname}
 
 BuildArch:      noarch
 
