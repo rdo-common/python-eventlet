@@ -8,6 +8,9 @@ License:        MIT
 URL:            http://eventlet.net
 Source0:        %pypi_source %{modname}
 
+# Python 3.7 support
+Patch0:         https://github.com/eventlet/eventlet/pull/506.patch#/python37.patch
+
 BuildArch:      noarch
 
 %description
@@ -120,6 +123,7 @@ nosetests-%{python3_version} -v
 %changelog
 * Fri Jun 22 2018 Miro Hrončok <mhroncok@redhat.com> - 0.23.0-1
 - Update to 0.23.0 (#1575434)
+- Add patch for Python 3.7 (#1594248)
 
 * Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 0.22.1-2
 - Rebuilt for Python 3.7
