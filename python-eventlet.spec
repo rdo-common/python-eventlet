@@ -12,12 +12,13 @@
 
 Name:           python-%{pypi_name}
 Version:        0.20.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
 Source0:        https://pypi.io/packages/source/e/eventlet/eventlet-%{version}.tar.gz
 Patch1:         0001-dns-hosts-file-was-consulted-after-nameservers.patch
+Patch2:         0002-greendns-don-t-contact-nameservers-if-one-entry-is-r.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
@@ -99,6 +100,7 @@ Documentation for the python-eventlet package.
 %setup -q -n %{pypi_name}-%{version}
 rm -rf *.egg-info
 %patch1 -p1
+%patch2 -p1
 
 # generate html docs
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
@@ -172,6 +174,9 @@ rm -rf %{buildroot}/%{python2_sitelib}/%{pypi_name}/green/http/{cookiejar,client
 %endif
 
 %changelog
+* Mon Aug 06 2018 Daniel Alvarez <dalvarez@redhat.com> - 0.20.1-3
+- Don't contact nameservers if there's at least one entry in /etc/hosts, lp#1785615
+
 * Fri Jun 09 2017 Ihar Hrachyshka <ihrachys@redhat.com> - 0.20.1-2
 - Consult /etc/hosts before resolving with DNS, lp#1696094
 
