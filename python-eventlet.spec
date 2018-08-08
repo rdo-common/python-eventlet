@@ -12,13 +12,16 @@
 
 Name:           python-%{pypi_name}
 Version:        0.20.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
 Source0:        https://pypi.io/packages/source/e/eventlet/eventlet-%{version}.tar.gz
 Patch1:         0001-dns-hosts-file-was-consulted-after-nameservers.patch
 Patch2:         0002-greendns-don-t-contact-nameservers-if-one-entry-is-r.patch
+Patch3:         0001-Fix-bad-ipv6-comparison.patch
+Patch4:         0002-greendns-udp-Fix-infinite-loop-when-source-address-m.patch
+Patch5:         0003-tests-Add-ipv6-tests-for-greendns-udp-function.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
@@ -101,6 +104,9 @@ Documentation for the python-eventlet package.
 rm -rf *.egg-info
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 # generate html docs
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
@@ -174,6 +180,9 @@ rm -rf %{buildroot}/%{python2_sitelib}/%{pypi_name}/green/http/{cookiejar,client
 %endif
 
 %changelog
+* Wed Aug 08 2018 Lon Hohberger <lon@redhat.com> 0.20.1-4
+- Fix ipv6 address handling (rhbz#1607967)
+
 * Mon Aug 06 2018 Daniel Alvarez <dalvarez@redhat.com> - 0.20.1-3
 - Don't contact nameservers if there's at least one entry in /etc/hosts, lp#1785615
 
