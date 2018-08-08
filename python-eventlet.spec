@@ -12,7 +12,7 @@
 
 Name:           python-%{pypi_name}
 Version:        0.20.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -180,7 +180,7 @@ rm -rf %{buildroot}/%{python2_sitelib}/%{pypi_name}/green/http/{cookiejar,client
 %endif
 
 %changelog
-* Wed Aug 08 2018 Lon Hohberger <lon@redhat.com> 0.20.1-4
+* Wed Aug 08 2018 Lon Hohberger <lon@redhat.com> 0.20.1-5
 - Fix ipv6 address handling (rhbz#1607967)
 
 * Mon Aug 06 2018 Daniel Alvarez <dalvarez@redhat.com> - 0.20.1-3
