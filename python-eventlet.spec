@@ -12,7 +12,7 @@
 
 Name:           python-%{pypi_name}
 Version:        0.20.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -23,6 +23,7 @@ Patch3:         0001-Fix-bad-ipv6-comparison.patch
 Patch4:         0002-greendns-udp-Fix-infinite-loop-when-source-address-m.patch
 Patch5:         0003-tests-Add-ipv6-tests-for-greendns-udp-function.patch
 Patch6:         0004-tests-Add-ipv4-udp-tests-for-greendns.patch
+Patch7:         0001-greendns-Treat-etc-hosts-entries-case-insensitive.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
@@ -109,6 +110,7 @@ rm -rf *.egg-info
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 # generate html docs
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
@@ -184,6 +186,7 @@ rm -rf %{buildroot}/%{python2_sitelib}/%{pypi_name}/green/http/{cookiejar,client
 %changelog
 * Fri Aug 10 2018 Lon Hohberger <lon@redhat.com> 0.20.1-6
 - Add ipv4 tests for bz1607967
+- Treat names as case-insensitive (rhbz#1612541)
 
 * Wed Aug 08 2018 Lon Hohberger <lon@redhat.com> 0.20.1-5
 - Fix ipv6 address handling (rhbz#1607967)
