@@ -1,8 +1,8 @@
 %global modname eventlet
 
 Name:           python-%{modname}
-Version:        0.23.0
-Release:        2%{?dist}
+Version:        0.24.1
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -57,6 +57,8 @@ io operations appear blocking at the source code level.
 Summary:        Documentation for python2-%{modname}
 BuildRequires:  python2-sphinx
 BuildRequires:  python2-zmq
+BuildRequires:  python2-dns
+BuildRequires:  python2-monotonic
 %{?python_provide:%python_provide python2-%{modname}-doc}
 
 %description -n python2-%{modname}-doc
@@ -66,6 +68,8 @@ BuildRequires:  python2-zmq
 Summary:        Documentation for python3-%{modname}
 BuildRequires:  python3-sphinx
 BuildRequires:  python3-zmq
+BuildRequires:  python3-dns
+BuildRequires:  python3-monotonic
 
 %description -n python3-%{modname}-doc
 %{summary}.
@@ -121,6 +125,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Sun Oct 14 2018 Kevin Fenzi <kevin@scrye.com> - 0.24.1-1
+- Update to 0.24.1. Fixes bug #1611023
+
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 0.23.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
