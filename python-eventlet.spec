@@ -1,13 +1,17 @@
 %global modname eventlet
 %{?python_enable_dependency_generator}
 
+%if 0%{?fedora} || 0%{?rhel} > 7
+%global with_python3 1
+%endif
+
 Name:           python-%{modname}
 Version:        0.25.1
 Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
-Source0:        %{pypi_source %{modname}}
+Source0:        https://files.pythonhosted.org/packages/source/e/eventlet/eventlet-%{version}.tar.gz
 
 BuildArch:      noarch
 
@@ -36,6 +40,7 @@ scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 
+%if 0%{?with_python3}
 %package -n python3-%{modname}
 Summary:        %{summary}
 BuildArch:      noarch
@@ -54,7 +59,20 @@ Eventlet is a networking library written in Python. It achieves high
 scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
+%endif
 
+%package -n python2-%{modname}-doc
+Summary:        Documentation for python2-%{modname}
+BuildRequires:  python2-sphinx
+BuildRequires:  python-zmq
+BuildRequires:  python2-dns
+BuildRequires:  python2-monotonic
+%{?python_provide:%python_provide python2-%{modname}-doc}
+
+%description -n python2-%{modname}-doc
+%{summary}.
+
+%if 0%{?with_python3}
 %package -n python3-%{modname}-doc
 Summary:        Documentation for python3-%{modname}
 BuildRequires:  python3-sphinx
@@ -62,6 +80,7 @@ BuildRequires:  python3-zmq
 
 %description -n python3-%{modname}-doc
 %{summary}.
+%endif
 
 %prep
 %autosetup -n %{modname}-%{version} -p1
@@ -72,10 +91,15 @@ sed -i "/'enum-compat',/d" setup.py
 
 %build
 %py2_build
+%if 0%{?with_python3}
 %py3_build
+%endif
 
 export PYTHONPATH=$(pwd)
+sphinx-build-%{python2_version} -b html -d doctrees doc html-2
+%if 0%{?with_python3}
 sphinx-build-%{python3_version} -b html -d doctrees doc html-3
+%endif
 
 %install
 %py2_install
@@ -85,12 +109,16 @@ rm -vrf %{buildroot}%{python2_sitelib}/tests
 # Trying to import it will fail under Python 2.7
 # https://github.com/eventlet/eventlet/issues/369
 rm -rf %{buildroot}/%{python2_sitelib}/%{modname}/green/http/{cookiejar,client}.py
+%if 0%{?with_python3}
 %py3_install
 rm -vrf %{buildroot}%{python3_sitelib}/tests
+%endif
 
 %check
+%if 0%{?with_python3}
 # Tests are written only for Python 3
 nosetests-%{python3_version} -v
+%endif
 
 %files -n python2-%{modname}
 %doc README.rst AUTHORS LICENSE NEWS
@@ -98,15 +126,23 @@ nosetests-%{python3_version} -v
 %{python2_sitelib}/%{modname}/
 %{python2_sitelib}/%{modname}-*.egg-info/
 
+%if 0%{?with_python3}
 %files -n python3-%{modname}
 %doc README.rst AUTHORS LICENSE NEWS
 %license LICENSE
 %{python3_sitelib}/%{modname}/
 %{python3_sitelib}/%{modname}-*.egg-info/
+%endif
 
+%files -n python2-%{modname}-doc
+%license LICENSE
+%doc html-2
+
+%if 0%{?with_python3}
 %files -n python3-%{modname}-doc
 %license LICENSE
 %doc html-3
+%endif
 
 %changelog
 * Thu Aug 22 2019 Kevin Fenzi <kevin@scrye.com> - 0.25.1-1
