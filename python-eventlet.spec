@@ -1,12 +1,13 @@
 %global modname eventlet
+%{?python_enable_dependency_generator}
 
 Name:           python-%{modname}
 Version:        0.24.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
-Source0:        %pypi_source %{modname}
+Source0:        %{pypi_source %{modname}}
 
 # Python 3.7 support
 Patch0:         https://github.com/eventlet/eventlet/pull/506.patch#/python37.patch
@@ -23,11 +24,13 @@ io operations appear blocking at the source code level.
 Summary:        %{summary}
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
+BuildRequires:  python2dist(dnspython) >= 1.15.0
+BuildRequires:  python2dist(enum34)
+BuildRequires:  python2dist(greenlet) >= 0.3
+BuildRequires:  python2dist(monotonic) >= 1.4
+BuildRequires:  python2dist(six) >= 1.10.0
 BuildRequires:  python2-nose
-BuildRequires:  python2-greenlet
 BuildRequires:  python2-pyOpenSSL
-Requires:       python2-greenlet
-Requires:       python2-enum34
 %{?python_provide:%python_provide python2-%{modname}}
 
 %description -n python2-%{modname}
@@ -41,10 +44,12 @@ Summary:        %{summary}
 BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3dist(dnspython) >= 1.15.0
+BuildRequires:  python3dist(greenlet) >= 0.3
+BuildRequires:  python3dist(monotonic) >= 1.4
+BuildRequires:  python3dist(six) >= 1.10.0
 BuildRequires:  python3-nose
-BuildRequires:  python3-greenlet
 BuildRequires:  python3-pyOpenSSL
-Requires:       python3-greenlet
 %{?python_provide:%python_provide python3-%{modname}}
 
 %description -n python3-%{modname}
@@ -57,8 +62,6 @@ io operations appear blocking at the source code level.
 Summary:        Documentation for python2-%{modname}
 BuildRequires:  python2-sphinx
 BuildRequires:  python2-zmq
-BuildRequires:  python2-dns
-BuildRequires:  python2-monotonic
 %{?python_provide:%python_provide python2-%{modname}-doc}
 
 %description -n python2-%{modname}-doc
@@ -68,8 +71,6 @@ BuildRequires:  python2-monotonic
 Summary:        Documentation for python3-%{modname}
 BuildRequires:  python3-sphinx
 BuildRequires:  python3-zmq
-BuildRequires:  python3-dns
-BuildRequires:  python3-monotonic
 
 %description -n python3-%{modname}-doc
 %{summary}.
@@ -125,6 +126,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Tue Nov 20 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 0.24.1-2
+- use python dependency generator
+
 * Sun Oct 14 2018 Kevin Fenzi <kevin@scrye.com> - 0.24.1-1
 - Update to 0.24.1. Fixes bug #1611023
 
