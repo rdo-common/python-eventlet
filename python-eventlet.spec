@@ -32,6 +32,8 @@ BuildRequires:  python2dist(monotonic) >= 1.4
 BuildRequires:  python2dist(six) >= 1.10
 BuildRequires:  python2-nose
 BuildRequires:  python2-pyOpenSSL
+Requires:       python2-greenlet
+Requires:       python-enum34
 %{?python_provide:%python_provide python2-%{modname}}
 
 %description -n python2-%{modname}
@@ -165,6 +167,7 @@ nosetests-%{python3_version} -v
 
 * Tue Nov 20 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 0.24.1-2
 - use python dependency generator
+- Fixed package name for python-enum for EL7 build.
 
 * Sun Oct 14 2018 Kevin Fenzi <kevin@scrye.com> - 0.24.1-1
 - Update to 0.24.1. Fixes bug #1611023
