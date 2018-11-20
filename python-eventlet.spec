@@ -6,7 +6,7 @@
 
 Name:           python-%{modname}
 Version:        0.24.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -31,7 +31,7 @@ BuildRequires:  python2-nose
 BuildRequires:  python2-greenlet
 BuildRequires:  python2-pyOpenSSL
 Requires:       python2-greenlet
-Requires:       python2-enum34
+Requires:       python-enum34
 %{?python_provide:%python_provide python2-%{modname}}
 
 %description -n python2-%{modname}
@@ -145,6 +145,9 @@ nosetests-%{python3_version} -v
 %endif
 
 %changelog
+* Tue Nov 20 2018 Alfredo Moralejo <amoralej@redhat.com> - 0.24.1-2
+- Fixed package name for python-enum for EL7 build.
+
 * Sun Oct 14 2018 Kevin Fenzi <kevin@scrye.com> - 0.24.1-1
 - Update to 0.24.1. Fixes bug #1611023
 
