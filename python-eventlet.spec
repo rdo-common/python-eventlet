@@ -6,7 +6,7 @@
 
 Name:           python-%{modname}
 Version:        0.24.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -30,8 +30,11 @@ BuildRequires:  python2-setuptools
 BuildRequires:  python2-nose
 BuildRequires:  python2-greenlet
 BuildRequires:  python2-pyOpenSSL
+Requires:       python2-dns
 Requires:       python2-greenlet
 Requires:       python-enum34
+Requires:       python2-monotonic
+Requires:       python2-six
 %{?python_provide:%python_provide python2-%{modname}}
 
 %description -n python2-%{modname}
@@ -49,7 +52,10 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-nose
 BuildRequires:  python3-greenlet
 BuildRequires:  python3-pyOpenSSL
+Requires:       python3-dns
 Requires:       python3-greenlet
+Requires:       python3-monotonic
+Requires:       python3-six
 %{?python_provide:%python_provide python3-%{modname}}
 
 %description -n python3-%{modname}
@@ -145,6 +151,9 @@ nosetests-%{python3_version} -v
 %endif
 
 %changelog
+* Tue Nov 20 2018 Alfredo Moralejo <amoralej@redhat.com> - 0.24.1-3
+- Add new dependencies dns, monotonic and six. Fixes bug #1651716
+
 * Tue Nov 20 2018 Alfredo Moralejo <amoralej@redhat.com> - 0.24.1-2
 - Fixed package name for python-enum for EL7 build.
 
