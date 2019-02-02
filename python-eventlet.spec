@@ -3,7 +3,7 @@
 
 Name:           python-%{modname}
 Version:        0.24.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -126,6 +126,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.24.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
 * Tue Nov 20 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 0.24.1-2
 - use python dependency generator
 
