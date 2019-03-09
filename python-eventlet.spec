@@ -3,7 +3,7 @@
 
 Name:           python-%{modname}
 Version:        0.24.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -58,15 +58,6 @@ scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
 io operations appear blocking at the source code level.
 
-%package -n python2-%{modname}-doc
-Summary:        Documentation for python2-%{modname}
-BuildRequires:  python2-sphinx
-BuildRequires:  python2-zmq
-%{?python_provide:%python_provide python2-%{modname}-doc}
-
-%description -n python2-%{modname}-doc
-%{summary}.
-
 %package -n python3-%{modname}-doc
 Summary:        Documentation for python3-%{modname}
 BuildRequires:  python3-sphinx
@@ -87,7 +78,6 @@ sed -i "/'enum-compat',/d" setup.py
 %py3_build
 
 export PYTHONPATH=$(pwd)
-sphinx-build-%{python2_version} -b html -d doctrees doc html-2
 sphinx-build-%{python3_version} -b html -d doctrees doc html-3
 
 %install
@@ -117,15 +107,14 @@ nosetests-%{python3_version} -v
 %{python3_sitelib}/%{modname}/
 %{python3_sitelib}/%{modname}-*.egg-info/
 
-%files -n python2-%{modname}-doc
-%license LICENSE
-%doc html-2
-
 %files -n python3-%{modname}-doc
 %license LICENSE
 %doc html-3
 
 %changelog
+* Sat Mar 09 2019 Kevin Fenzi <kevin@scrye.com> - 0.24.1-4
+- Drop python2-eventlet-doc subpackage as python2-sphinx is going away.
+
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.24.1-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
