@@ -2,15 +2,12 @@
 %{?python_enable_dependency_generator}
 
 Name:           python-%{modname}
-Version:        0.24.1
-Release:        4%{?dist}
+Version:        0.25.0
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
 Source0:        %{pypi_source %{modname}}
-
-# Python 3.7 support
-Patch0:         https://github.com/eventlet/eventlet/pull/506.patch#/python37.patch
 
 BuildArch:      noarch
 
@@ -112,6 +109,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Tue May 28 2019 Kevin Fenzi <kevin@scrye.com> - 0.25.0-1
+- Update to 0.25.0. Fixes bug #1713639
+
 * Sat Mar 09 2019 Kevin Fenzi <kevin@scrye.com> - 0.24.1-4
 - Drop python2-eventlet-doc subpackage as python2-sphinx is going away.
 
