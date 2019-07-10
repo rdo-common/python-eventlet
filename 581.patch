@@ -1,0 +1,31 @@
+From 158a5b7532660060f5c12fe665fc61a60679ae26 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Miro=20Hron=C4=8Dok?= <miro@hroncok.cz>
+Date: Wed, 10 Jul 2019 15:21:35 +0200
+Subject: [PATCH] Stop using deprecated cgi.parse_qs() to support Python 3.8
+
+Fixes https://github.com/eventlet/eventlet/issues/580
+---
+ tests/wsgi_test.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tests/wsgi_test.py b/tests/wsgi_test.py
+index 9405d80a..cd87863c 100644
+--- a/tests/wsgi_test.py
++++ b/tests/wsgi_test.py
+@@ -22,6 +22,7 @@
+ from eventlet.green import ssl
+ from eventlet.support import bytes_to_str
+ import six
++from six.moves.urllib import parse
+ import tests
+ 
+ 
+@@ -318,7 +319,7 @@ def test_007_get_arg(self):
+         # define a new handler that does a get_arg as well as a read_body
+         def new_app(env, start_response):
+             body = bytes_to_str(env['wsgi.input'].read())
+-            a = cgi.parse_qs(body).get('a', [1])[0]
++            a = parse.parse_qs(body).get('a', [1])[0]
+             start_response('200 OK', [('Content-type', 'text/plain')])
+             return [six.b('a is %s, body is %s' % (a, body))]
+ 

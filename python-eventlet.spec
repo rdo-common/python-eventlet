@@ -9,6 +9,9 @@ License:        MIT
 URL:            http://eventlet.net
 Source0:        %{pypi_source %{modname}}
 
+# Python 3.8 support
+Patch0:         https://github.com/eventlet/eventlet/pull/581.patch
+
 BuildArch:      noarch
 
 %description
