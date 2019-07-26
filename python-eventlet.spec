@@ -3,7 +3,7 @@
 
 Name:           python-%{modname}
 Version:        0.25.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -112,6 +112,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.25.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
 * Tue May 28 2019 Kevin Fenzi <kevin@scrye.com> - 0.25.0-1
 - Update to 0.25.0. Fixes bug #1713639
 
