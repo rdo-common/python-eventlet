@@ -2,15 +2,12 @@
 %{?python_enable_dependency_generator}
 
 Name:           python-%{modname}
-Version:        0.25.0
-Release:        3%{?dist}
+Version:        0.25.1
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
 Source0:        %{pypi_source %{modname}}
-
-# Python 3.8 support
-Patch0:         https://github.com/eventlet/eventlet/pull/581.patch
 
 BuildArch:      noarch
 
@@ -112,6 +109,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Thu Aug 22 2019 Kevin Fenzi <kevin@scrye.com> - 0.25.1-1
+- Update to 0.25.1. Fixes bug #1744357
+
 * Mon Aug 19 2019 Miro Hrončok <mhroncok@redhat.com> - 0.25.0-3
 - Rebuilt for Python 3.8
 
