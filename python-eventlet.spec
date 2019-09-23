@@ -25,11 +25,11 @@ io operations appear blocking at the source code level.
 Summary:        %{summary}
 BuildRequires:  python2-devel
 BuildRequires:  python2-setuptools
-BuildRequires:  python2dist(dnspython) >= 1.15
-BuildRequires:  python2dist(enum34)
-BuildRequires:  python2dist(greenlet) >= 0.3
-BuildRequires:  python2dist(monotonic) >= 1.4
-BuildRequires:  python2dist(six) >= 1.10
+BuildRequires:  python2-dns >= 1.15
+BuildRequires:  python-enum34
+BuildRequires:  python2-greenlet >= 0.3
+BuildRequires:  python2-monotonic >= 1.4
+BuildRequires:  python2-six >= 1.10
 BuildRequires:  python2-nose
 BuildRequires:  python2-pyOpenSSL
 Requires:       python2-dns
