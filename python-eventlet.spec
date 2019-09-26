@@ -3,7 +3,7 @@
 
 Name:           python-%{modname}
 Version:        0.25.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -12,25 +12,6 @@ Source0:        %{pypi_source %{modname}}
 BuildArch:      noarch
 
 %description
-Eventlet is a networking library written in Python. It achieves high
-scalability by using non-blocking io while at the same time retaining
-high programmer usability by using coroutines to make the non-blocking
-io operations appear blocking at the source code level.
-
-%package -n python2-%{modname}
-Summary:        %{summary}
-BuildRequires:  python2-devel
-BuildRequires:  python2-setuptools
-BuildRequires:  python2dist(dnspython) >= 1.15
-BuildRequires:  python2dist(enum34)
-BuildRequires:  python2dist(greenlet) >= 0.3
-BuildRequires:  python2dist(monotonic) >= 1.4
-BuildRequires:  python2dist(six) >= 1.10
-BuildRequires:  python2-nose
-BuildRequires:  python2-pyOpenSSL
-%{?python_provide:%python_provide python2-%{modname}}
-
-%description -n python2-%{modname}
 Eventlet is a networking library written in Python. It achieves high
 scalability by using non-blocking io while at the same time retaining
 high programmer usability by using coroutines to make the non-blocking
@@ -66,37 +47,23 @@ BuildRequires:  python3-zmq
 %prep
 %autosetup -n %{modname}-%{version} -p1
 rm -vrf *.egg-info
-# Remove dependency on enum-compat from setup.py. enum-compat is installed
-# as Require for python2 subpackage and it is not needed for Python 3
+# Remove dependency on enum-compat from setup.py
+# enum-compat is not needed for Python 3
 sed -i "/'enum-compat',/d" setup.py
 
 %build
-%py2_build
 %py3_build
 
 export PYTHONPATH=$(pwd)
 sphinx-build-%{python3_version} -b html -d doctrees doc html-3
 
 %install
-%py2_install
-rm -vrf %{buildroot}%{python2_sitelib}/tests
-# FIXME: Those files are not meant to be used with Python 2.7
-# Anyway the whole module eventlet.green.http is Python 3 only
-# Trying to import it will fail under Python 2.7
-# https://github.com/eventlet/eventlet/issues/369
-rm -rf %{buildroot}/%{python2_sitelib}/%{modname}/green/http/{cookiejar,client}.py
 %py3_install
 rm -vrf %{buildroot}%{python3_sitelib}/tests
 
 %check
 # Tests are written only for Python 3
 nosetests-%{python3_version} -v
-
-%files -n python2-%{modname}
-%doc README.rst AUTHORS LICENSE NEWS
-%license LICENSE
-%{python2_sitelib}/%{modname}/
-%{python2_sitelib}/%{modname}-*.egg-info/
 
 %files -n python3-%{modname}
 %doc README.rst AUTHORS LICENSE NEWS
@@ -109,6 +76,10 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Thu Sep 26 2019 Miro Hrončok <mhroncok@redhat.com> - 0.25.1-2
+- Subpackage python2-eventlet has been removed
+  See https://fedoraproject.org/wiki/Changes/Mass_Python_2_Package_Removal
+
 * Thu Aug 22 2019 Kevin Fenzi <kevin@scrye.com> - 0.25.1-1
 - Update to 0.25.1. Fixes bug #1744357
 
