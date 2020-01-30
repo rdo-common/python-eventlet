@@ -3,7 +3,7 @@
 
 Name:           python-%{modname}
 Version:        0.25.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -76,6 +76,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Thu Jan 30 2020 Fedora Release Engineering <releng@fedoraproject.org> - 0.25.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
 * Thu Sep 26 2019 Miro Hrončok <mhroncok@redhat.com> - 0.25.1-2
 - Subpackage python2-eventlet has been removed
   See https://fedoraproject.org/wiki/Changes/Mass_Python_2_Package_Removal
