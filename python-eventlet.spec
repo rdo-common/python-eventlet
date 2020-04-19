@@ -2,8 +2,8 @@
 %{?python_enable_dependency_generator}
 
 Name:           python-%{modname}
-Version:        0.25.1
-Release:        3%{?dist}
+Version:        0.25.2
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
@@ -76,6 +76,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Sat Apr 18 2020 Kevin Fenzi <kevin@scrye.com> - 0.25.2-1
+- Update to 0.25.2. Fixes bug #1822602
+
 * Thu Jan 30 2020 Fedora Release Engineering <releng@fedoraproject.org> - 0.25.1-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
