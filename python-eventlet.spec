@@ -1,13 +1,16 @@
 %global modname eventlet
+%global git_commit 087ba743c7af8a40ac1e4e2ec89409eee3b4233e
+%global git_date   20201102
+%global git_commit_short %(c="%{git_commit}"; echo "${c:0:8}")
 %{?python_enable_dependency_generator}
 
 Name:           python-%{modname}
-Version:        0.26.0
-Release:        1%{?dist}
+Version:        0.29.1
+Release:        1.%{git_date}git%{git_commit_short}%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
-Source0:        %{pypi_source %{modname}}
+Source0:        https://github.com/eventlet/%{modname}/archive/%{git_commit}.zip
 
 BuildArch:      noarch
 
@@ -45,7 +48,7 @@ BuildRequires:  python3-zmq
 %{summary}.
 
 %prep
-%autosetup -n %{modname}-%{version} -p1
+%autosetup -n %{modname}-%{git_commit}
 rm -vrf *.egg-info
 # Remove dependency on enum-compat from setup.py
 # enum-compat is not needed for Python 3
@@ -83,6 +86,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Fri Nov 06 2020 Joel Capitao <jcapitao@redhat.com> - 0.29.1-1.20201102git087ba743
+- Update to 0.29.1.20201102git087ba743. (rhbz#1862178)
+
 * Sat Oct 10 2020 Kevin Fenzi <kevin@scrye.com> - 0.26.0-1
 - Update to 0.26.0.
 
