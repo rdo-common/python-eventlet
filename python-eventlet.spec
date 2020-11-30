@@ -2,15 +2,23 @@
 %global git_commit 087ba743c7af8a40ac1e4e2ec89409eee3b4233e
 %global git_date   20201102
 %global git_commit_short %(c="%{git_commit}"; echo "${c:0:8}")
+%global bundle_dns 1
 %{?python_enable_dependency_generator}
 
 Name:           python-%{modname}
 Version:        0.29.1
-Release:        1.%{git_date}git%{git_commit_short}%{?dist}
+Release:        2.%{git_date}git%{git_commit_short}%{?dist}
 Summary:        Highly concurrent networking library
+%if %bundle_dns
+License:        MIT and ISC
+%else
 License:        MIT
+%endif
+
 URL:            http://eventlet.net
 Source0:        https://github.com/eventlet/%{modname}/archive/%{git_commit}.zip
+Source1:        %{pypi_source dnspython 1.16.0 zip}
+Patch0:         switch_to_python_cryptography.patch
 
 BuildArch:      noarch
 
@@ -25,13 +33,23 @@ Summary:        %{summary}
 BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-BuildRequires:  python3dist(dnspython) >= 1.15
 BuildRequires:  python3dist(greenlet) >= 0.3
 BuildRequires:  python3dist(monotonic) >= 1.4
 BuildRequires:  python3dist(six) >= 1.10
 BuildRequires:  python3-nose
 BuildRequires:  python3-pyOpenSSL
+
+%if %bundle_dns
+Provides:       bundled(python3dist(dnspython)) = 1.16.0
+BuildRequires:  python3-cryptography
+Recommends:     python3-cryptography
+%else
+BuildRequires:  python3dist(dnspython) >= 1.15
+BuildRequires:  python3dist(dnspython) < 2
+%endif
+
 %{?python_provide:%python_provide python3-%{modname}}
+
 
 %description -n python3-%{modname}
 Eventlet is a networking library written in Python. It achieves high
@@ -48,11 +66,28 @@ BuildRequires:  python3-zmq
 %{summary}.
 
 %prep
-%autosetup -n %{modname}-%{git_commit}
-rm -vrf *.egg-info
+%if %bundle_dns
+%setup -n %{modname}-%{git_commit} -q -a1
+%else
+%setup -n %{modname}-%{git_commit} -q
+%endif
 # Remove dependency on enum-compat from setup.py
 # enum-compat is not needed for Python 3
 sed -i "/'enum-compat',/d" setup.py
+%if %bundle_dns
+# We bundle last version of dns1 as eventlet does not support yet dns2
+pushd dnspython-1.16.0
+%patch -P 0 -p1
+grep -lRZ "dns\." dns | xargs -0 -l sed -i -e 's/\([^[a-zA-Z]\)dns\./\1eventlet\.dns\./g'
+grep -lRZ "^import dns$" dns | xargs -0 -l sed -i -e 's/^import\ dns$/import\ eventlet\.dns/'
+popd
+mv dnspython-1.16.0/dns eventlet
+sed -i '/dnspython >= 1.15.0, < 2.0.0/d' setup.py
+sed -i "s/import_patched('dns/import_patched('eventlet\.dns/g" eventlet/support/greendns.py
+cp -a dnspython-1.16.0/LICENSE LICENSE.dns
+rm -vrf dnspython-1.16.0
+%endif
+rm -vrf *.egg-info
 
 %build
 %py3_build
@@ -78,6 +113,9 @@ nosetests-%{python3_version} -v
 %files -n python3-%{modname}
 %doc README.rst AUTHORS LICENSE NEWS
 %license LICENSE
+%if %bundle_dns
+%license LICENSE.dns
+%endif
 %{python3_sitelib}/%{modname}/
 %{python3_sitelib}/%{modname}-*.egg-info/
 
@@ -86,6 +124,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Mon Nov 30 2020 Joel Capitao <jcapitao@redhat.com> - 0.29.1-2.20201102git087ba743
+- Bundle dns1 (rhbz#1896191)
+
 * Fri Nov 06 2020 Joel Capitao <jcapitao@redhat.com> - 0.29.1-1.20201102git087ba743
 - Update to 0.29.1.20201102git087ba743. (rhbz#1862178)
 
