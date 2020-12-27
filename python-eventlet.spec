@@ -1,13 +1,10 @@
 %global modname eventlet
-%global git_commit 087ba743c7af8a40ac1e4e2ec89409eee3b4233e
-%global git_date   20201102
-%global git_commit_short %(c="%{git_commit}"; echo "${c:0:8}")
 %global bundle_dns 1
 %{?python_enable_dependency_generator}
 
 Name:           python-%{modname}
-Version:        0.29.1
-Release:        2.%{git_date}git%{git_commit_short}%{?dist}
+Version:        0.30.0
+Release:        1%{?dist}
 Summary:        Highly concurrent networking library
 %if %bundle_dns
 License:        MIT and ISC
@@ -16,7 +13,7 @@ License:        MIT
 %endif
 
 URL:            http://eventlet.net
-Source0:        https://github.com/eventlet/%{modname}/archive/%{git_commit}.zip
+Source0:        https://github.com/eventlet/%{modname}/archive/v%{version}.zip
 Source1:        %{pypi_source dnspython 1.16.0 zip}
 Patch0:         switch_to_python_cryptography.patch
 
@@ -67,9 +64,9 @@ BuildRequires:  python3-zmq
 
 %prep
 %if %bundle_dns
-%setup -n %{modname}-%{git_commit} -q -a1
+%setup -n %{modname}-%{version} -q -a1
 %else
-%setup -n %{modname}-%{git_commit} -q
+%setup -n %{modname}-%{version} -q
 %endif
 # Remove dependency on enum-compat from setup.py
 # enum-compat is not needed for Python 3
@@ -124,6 +121,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Sat Dec 26 2020 Kevin Fenzi <kevin@scrye.com> - 0.30.0-1
+- Update to 0.30.0. (rhbz#1907221)
+
 * Mon Nov 30 2020 Joel Capitao <jcapitao@redhat.com> - 0.29.1-2.20201102git087ba743
 - Bundle dns1 (rhbz#1896191)
 
