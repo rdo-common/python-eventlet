@@ -3,11 +3,12 @@
 
 Name:           python-%{modname}
 Version:        0.25.2
-Release:        3%{?dist}
+Release:        3.1%{?dist}
 Summary:        Highly concurrent networking library
 License:        MIT
 URL:            http://eventlet.net
 Source0:        %{pypi_source %{modname}}
+Patch01:        0001-ssl-py3.6-using-client-certificates-raised-ValueErro.patch
 
 BuildArch:      noarch
 
@@ -76,6 +77,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Tue Jul 13 2021 Alfredo Moralejo <amoralej@redhat.com> - 0.25.2-3.1
+- ssl: Fix py3.6 using client certificates raised ValueError: check_hostname needs server_hostname argument
+
 * Wed Jul 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 0.25.2-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 
