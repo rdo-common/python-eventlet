@@ -4,7 +4,7 @@
 
 Name:           python-%{modname}
 Version:        0.30.0
-Release:        1%{?dist}
+Release:        1.1%{?dist}
 Summary:        Highly concurrent networking library
 %if %bundle_dns
 License:        MIT and ISC
@@ -16,6 +16,7 @@ URL:            http://eventlet.net
 Source0:        https://github.com/eventlet/%{modname}/archive/v%{version}.zip
 Source1:        %{pypi_source dnspython 1.16.0 zip}
 Patch0:         switch_to_python_cryptography.patch
+Patch1:         0001-ssl-py3.6-using-client-certificates-raised-ValueErro.patch
 
 BuildArch:      noarch
 
@@ -71,6 +72,7 @@ BuildRequires:  python3-zmq
 # Remove dependency on enum-compat from setup.py
 # enum-compat is not needed for Python 3
 sed -i "/'enum-compat',/d" setup.py
+%patch -P 1 -p1
 %if %bundle_dns
 # We bundle last version of dns1 as eventlet does not support yet dns2
 pushd dnspython-1.16.0
@@ -121,6 +123,9 @@ nosetests-%{python3_version} -v
 %doc html-3
 
 %changelog
+* Mon Sep 13 2021 Alfredo Moralejo <amoralej@redhat.com> - 0.30.0-1.1
+- ssl: Fix py3.6 using client certificates raised ValueError: check_hostname needs server_hostname argument
+
 * Sat Dec 26 2020 Kevin Fenzi <kevin@scrye.com> - 0.30.0-1
 - Update to 0.30.0. (rhbz#1907221)
 
