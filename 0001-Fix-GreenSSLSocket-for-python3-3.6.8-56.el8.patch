@@ -1,0 +1,30 @@
+From a30c4e909612d8a0cce54886de3497f52e345957 Mon Sep 17 00:00:00 2001
+From: Alfredo Moralejo <amoralej@redhat.com>
+Date: Thu, 23 Nov 2023 16:29:39 +0100
+Subject: [PATCH] Fix GreenSSLSocket for python3-3.6.8-56.el8
+
+In CentOS Stream 8, python3-3.6.8-56.el8 has backported a cve fix which
+changes the behavior of SSLSocket to make it similar to python3 >= 3.7
+[1].  This patch is delaring _timeout while creating the GreenSSLSocket.
+
+[1] https://gitlab.com/redhat/centos-stream/rpms/python3/-/commit/b1da2b26d2c7066b271a3bdd9d508e97bc38da81
+---
+ eventlet/green/ssl.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/eventlet/green/ssl.py b/eventlet/green/ssl.py
+index c49e872..9c20d59 100644
+--- a/eventlet/green/ssl.py
++++ b/eventlet/green/ssl.py
+@@ -110,6 +110,8 @@ class GreenSSLSocket(_original_sslsocket):
+             self._timeout = sock.gettimeout()
+ 
+         if _is_under_py_3_7:
++            # This is required for CentOS Stream 8 python 3.6 >= python3-3.6.8-56.el8
++            self._timeout = sock.gettimeout()
+             # nonblocking socket handshaking on connect got disabled so let's pretend it's disabled
+             # even when it's on
+             super(GreenSSLSocket, self).__init__(
+-- 
+2.38.1
+

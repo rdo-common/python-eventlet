@@ -1,4 +1,4 @@
-From c6226cc551034c52d61b464cce0b6cc2654d760c Mon Sep 17 00:00:00 2001
+From 3991e48fb61865b48033e254e87fe145eb0424a7 Mon Sep 17 00:00:00 2001
 From: Paul Lockaby <plockaby@uw.edu>
 Date: Thu, 6 Jun 2019 13:39:06 -0700
 Subject: [PATCH] ssl: py3.6 using client certificates raised ValueError:
@@ -12,10 +12,10 @@ https://github.com/eventlet/eventlet/pull/575
  2 files changed, 25 insertions(+), 1 deletion(-)
 
 diff --git a/eventlet/green/ssl.py b/eventlet/green/ssl.py
-index 552afc8..abe8046 100644
+index c49e872..4162712 100644
 --- a/eventlet/green/ssl.py
 +++ b/eventlet/green/ssl.py
-@@ -353,7 +353,7 @@ class GreenSSLSocket(_original_sslsocket):
+@@ -364,7 +364,7 @@ class GreenSSLSocket(_original_sslsocket):
                  sslobj = self._context._wrap_socket(self._sock, server_side, ssl_sock=self)
              else:
                  context = self.context if PY33 else self._context
@@ -25,20 +25,21 @@ index 552afc8..abe8046 100644
              sslobj = sslwrap(self._sock, server_side, self.keyfile, self.certfile,
                               self.cert_reqs, self.ssl_version,
 diff --git a/tests/ssl_test.py b/tests/ssl_test.py
-index d8b7d7e..231f027 100644
+index ea0cc85..b5913a2 100644
 --- a/tests/ssl_test.py
 +++ b/tests/ssl_test.py
-@@ -1,5 +1,6 @@
+@@ -1,6 +1,7 @@
  import contextlib
+ import random
  import socket
 +import sys
  import warnings
  
  import eventlet
-@@ -303,3 +304,26 @@ class SSLTest(tests.LimitedTestCase):
-                 server_to_client.close()
- 
-                 listener.close()
+@@ -371,3 +372,26 @@ class SSLTest(tests.LimitedTestCase):
+         peer, _ = server_tls.accept()
+         assert peer.recv(64) == expected
+         peer.close()
 +
 +    def test_client_check_hostname(self):
 +        # stdlib API compatibility
@@ -63,5 +64,5 @@ index d8b7d7e..231f027 100644
 +        client.recv(64)
 +        server_coro.wait()
 -- 
-2.26.2
+2.27.0
 
